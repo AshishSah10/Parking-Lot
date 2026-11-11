@@ -36,6 +36,14 @@ Finding the first available slot should be based on:
     The slot should be of the same type as the vehicle.
     The slot should be on the lowest possible floor in the parking lot.
     The slot should have the lowest possible slot number on the floor.
+In the future, this should be extendable to other availability strategy.
+
+Fee calculation should be based on duration and type of vehicle:
+    Car - duration * 50
+    Bike - duration * 20
+    Truck - duration * 100
+In the future, this should be extendable to other fee calculation strategy.
+
 
 Numbered serially from 1 to n for each floor where n is the number of parking slots on that floor.
 

@@ -2,18 +2,20 @@ package models;
 
 import enums.PaymentStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Bill extends BaseEntity{
     // in hours
-    private double duration;
+    private Duration duration;
     private double amount;
-    private final Date exitTime;
+    private final LocalDateTime exitTime;
     private PaymentStatus paymentStatus;
 
     private final Long ticketId;
 
-    public Bill(Long ticketId, Date exitTime, double duration, double amount, PaymentStatus paymentStatus) {
+    public Bill(Long ticketId, LocalDateTime exitTime, Duration duration, double amount, PaymentStatus paymentStatus) {
         this.ticketId = ticketId;
         this.exitTime = exitTime;
         this.amount = amount;
@@ -21,23 +23,11 @@ public class Bill extends BaseEntity{
         this.paymentStatus = paymentStatus;
     }
 
-    public Bill(Date exitTime, Long ticketId, PaymentStatus paymentStatus) {
-        this.exitTime = exitTime;
-        this.ticketId = ticketId;
-        this.paymentStatus = paymentStatus;
-    }
-
-    public Bill(Date exitTime, Long ticketId) {
-        this.exitTime = exitTime;
-        this.ticketId = ticketId;
-        this.paymentStatus = PaymentStatus.UNPAID;
-    }
-
-    public double getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(double duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
