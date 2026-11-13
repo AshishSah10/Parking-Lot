@@ -19,6 +19,13 @@ public class Slot extends BaseEntity{
         this.status = SlotStatus.VACANT;
     }
 
+    public Slot(String slotName, Long floorId, Type slotType){
+        this.slotName = slotName;
+        this.floorId = floorId;
+        this.slotType = slotType;
+        this.status = SlotStatus.VACANT;
+    }
+
     public String getSlotName() {
         return slotName;
     }

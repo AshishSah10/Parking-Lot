@@ -51,7 +51,7 @@ public class Bill extends BaseEntity{
         return ticketId;
     }
 
-    public Date getExitTime() {
+    public LocalDateTime getExitTime() {
         return exitTime;
     }
 }

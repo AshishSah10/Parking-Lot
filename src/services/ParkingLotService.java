@@ -3,10 +3,7 @@ package services;
 import enums.SlotStatus;
 import enums.Type;
 import models.*;
-import repositories.BillRepository;
-import repositories.SlotRepository;
-import repositories.TicketRepository;
-import repositories.VehicleRepository;
+import repositories.*;
 
 import java.util.*;
 
@@ -20,6 +17,8 @@ public class ParkingLotService {
     private BillService billService;
     private TicketRepository ticketRepository;
     private BillRepository billRepository;
+    private FloorRepository floorRepository;
+    private ParkingLotRepository parkingLotRepository;
 
     // Add floor to the parking lot
     public void addFloor(Floor floor) {
@@ -32,35 +31,72 @@ public class ParkingLotService {
         this.parkingLot.getFloors().removeLast();
     }
 
+    public ParkingLot getParkingLot(){
+        return this.parkingLot;
+    }
+
+    //    create the parking lot.
+    public ParkingLot createParkingLot(String name, int noOfFloors, int noOfSlotPerFloor){
+        List<Floor> floors = new ArrayList<>(noOfFloors);
+        List<Slot> slots = new ArrayList<>(noOfSlotPerFloor);
+
+        for(int i = 1; i <= noOfFloors; i++){
+            Floor floor = new Floor(i);
+            Long floorId = floorRepository.save(floor).getId();
+            int j = 1;
+            Slot slot = null;
+            while(j <= 5){
+                slot = new Slot(name+"_"+i+"_"+j, floorId, Type.TRUCK);
+                slots.add(slot);
+                slotRepository.save(slot);
+                j++;
+            }
+            while(j > 5 && j <= 35){
+                slot = new Slot(name+"_"+i+"_"+j, floorId, Type.BIKE);
+                slots.add(slot);
+                slotRepository.save(slot);
+                j++;
+            }
+            while(j > 35 && j <= 50){
+                slot = new Slot(name+"_"+i+"_"+j, floorId, Type.CAR);
+                slots.add(slot);
+                slotRepository.save(slot);
+                j++;
+            }
+            floor.setSlots(slots);
+            floors.add(floor);
+            floorRepository.save(floor);
+        }
 
 
+        ParkingLot parkingLot = new ParkingLot(name, floors);
+        return parkingLotRepository.save(parkingLot);
+    }
 
-//    create the parking lot.
-
-//    Add a parking lot slot to any of the floors.
+    // Add a parking lot slot to any of the floors.
     public void addSlot(Slot slot, Floor floor){
         this.floorService.addSlot(slot, floor);
     }
 
 
-    // Given a vehicle, it finds the first available slot, books it, creates a ticket, parks the vehicle, and finally returns the ticket.
-    public Ticket parkVehicle(Vehicle vehicle){
-        Slot slot = slotAssignmentStrategy.assignSlot(vehicle);
-        Type vehicleType = vehicle.getVehicleType();
-        if(slot == null){
-            System.out.println("No Vacant slot of type "+vehicleType+" is available.");
-            return null;
-        }
+//    // Given a vehicle, it finds the first available slot, books it, creates a ticket, parks the vehicle, and finally returns the ticket.
+//    public Ticket parkVehicle(Vehicle vehicle){
+//        Slot slot = slotAssignmentStrategy.assignSlot(vehicle);
+//        Type vehicleType = vehicle.getVehicleType();
+//        if(slot == null){
+//            System.out.println("No Vacant slot of type "+vehicleType+" is available.");
+//            return null;
+//        }
+//
+//        Ticket ticket = ticketService.generateTicket(slot, vehicle);
+//        slotRepository.save(slot);
+//        vehicleRepository.save(vehicle);
+//
+//        return ticket;
+//    }
 
-        Ticket ticket = ticketService.generateTicket(slot, vehicle);
-        slotRepository.save(slot);
-        vehicleRepository.save(vehicle);
 
-        return ticket;
-    }
-
-
-//    Unparks a vehicle given the ticket id.
+    //  Unparks a vehicle given the ticket id.
     public Bill unparkVehicle(Ticket ticket){
         Optional<Slot> slotOptional = slotRepository.findById(ticket.getSlotId());
         if(slotOptional.isEmpty()){
@@ -88,7 +124,7 @@ public class ParkingLotService {
     }
 
     // Displays the number of free slots per floor for a specific vehicle type.
-    public Map<Floor, Integer> getCountOfFreeSlotsOnEachFloor(Type vehicleType){
+    public Map<Floor, Integer> countFreeSlotsOnEachFloor(Type vehicleType){
         Map<Floor, Integer> floorSlotMap = new HashMap<>();
         List<Floor> floors = parkingLot.getFloors();
         for(Floor floor : floors){
@@ -99,7 +135,7 @@ public class ParkingLotService {
     }
 
     //  Displays all the free slots per floor for a specific vehicle type.
-    public Map<Floor, List<Slot>> getFreeSlotsOnEachFloor(Type vehicleType){
+    public Map<Floor, List<Slot>> getAllFreeSlotsOnEachFloor(Type vehicleType){
         Map<Floor, List<Slot>> floorSlotMap = new HashMap<>();
         List<Floor> floors = parkingLot.getFloors();
         for(Floor floor : floors){
@@ -109,7 +145,7 @@ public class ParkingLotService {
     }
 
     // Displays all the occupied slots per floor for a specific vehicle type.
-    public Map<Floor, List<Slot>> getOccupiedSlotsOnEachFloor(Type vehicleType){
+    public Map<Floor, List<Slot>> getAllOccupiedSlotsOnEachFloor(Type vehicleType){
         Map<Floor, List<Slot>> floorSlotMap = new HashMap<>();
         List<Floor> floors = parkingLot.getFloors();
         for(Floor floor : floors){

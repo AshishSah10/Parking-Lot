@@ -12,11 +12,10 @@ public class TicketService {
     private TicketRepository ticketRepository;
     public Ticket generateTicket(Slot slot, Vehicle vehicle){
         Ticket ticket = new Ticket(PARKINGLOTID+"_"+slot.getSlotName(), slot.getId(), vehicle.getId(), LocalDateTime.now());
-        ticketRepository.save(ticket);
-        return ticket;
+        return ticketRepository.save(ticket);
     }
 
     public boolean validateTicket(Ticket ticket){
-
+        return true;
     }
 }
